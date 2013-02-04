@@ -46,7 +46,6 @@ namespace Gears.Cartography
             map0.NUM_LAYERS = 5;
             map0.LAYER_WIDTH_TILES = 80;
             map0.LAYER_HEIGHT_TILES = 35;
-            map0.TILE_DATA = "439f8h,f309f,43f3fj34f,-34f349";
 
         }
         private static void SerializeToXML(Map map, string SAVE_LOCATION)
@@ -78,7 +77,6 @@ namespace Gears.Cartography
                         Debug.Out("@MAP/LAYERS=" + map.NUM_LAYERS);
                         Debug.Out("@MAP/LAYERWIDTH=" + map.LAYER_WIDTH_TILES);
                         Debug.Out("@MAP/LAYERHEIGHT=" + map.LAYER_HEIGHT_TILES);
-                        Debug.Out("@MAP/DATA=" + map.TILE_DATA);
                         return map;
                     }
                     catch (InvalidOperationException ioe)
@@ -124,6 +122,25 @@ namespace Gears.Cartography
     public class Map
     {
         //ASSIGNMENTS ARE FOR TESTING PURPOSES ONLY!!!
+        protected Map(Map copyMe)
+        {
+            VERSION = copyMe.VERSION;
+            BGM_FILE_LOC = copyMe.BGM_FILE_LOC;
+            FADE_IN_FILE_LOC = copyMe.FADE_IN_FILE_LOC;
+            FADE_OUT_FILE_LOC = copyMe.FADE_OUT_FILE_LOC;
+            BG_IMAGE_FILE_LOC = copyMe.BG_IMAGE_FILE_LOC;
+            NUM_LAYERS = copyMe.NUM_LAYERS;
+            LAYER_WIDTH_TILES = copyMe.LAYER_WIDTH_TILES;
+            LAYER_HEIGHT_TILES = copyMe.LAYER_HEIGHT_TILES;
+            LAYERS = new List<layer>();
+
+            foreach (layer lay in copyMe.LAYERS)
+                LAYERS.Add(lay);
+
+
+        }
+
+        public Map() { }
 
         [XmlAttribute("vers")]
         public string VERSION {get; set;}
@@ -139,21 +156,78 @@ namespace Gears.Cartography
 
         [XmlElement("layers")]
         public byte NUM_LAYERS {get; set;}
-        [XmlElement("layerwidth")]
-        public int LAYER_WIDTH_TILES {get; set;}
-        [XmlElement("layerheight")]
-        public int LAYER_HEIGHT_TILES {get; set;}
+            [XmlAttribute("width")]
+            public int LAYER_WIDTH_TILES {get; set;}
+            [XmlAttribute("height")]
+            public int LAYER_HEIGHT_TILES {get; set;}
 
-        [XmlElement("data")]
-        public string TILE_DATA {get; set;}
+            [XmlElement("data")]
+            public List<layer> LAYERS { get; set; }
+
+
+            protected static Map deserializeFromXml(string fileName)
+            {
+                XmlSerializer deserializer = new XmlSerializer(typeof(Map));
+                TextReader reader = new StreamReader(fileName);
+
+                return (Gears.Cartography.Map)deserializer.Deserialize(reader);
+            }
+
 
 
     }
+
+    public class layer
+    {
+        [XmlAttribute("layerName")]
+        public string NAME { get; set; }
+
+        [XmlElement("tiles")]
+        public List<tile> TILES { get; set; }
+
+        [XmlElement("components")]
+        public List<component> COMPONENTS { get; set; }
+
+
+    }
+
+    public class tile
+    {
+        [XmlAttribute("coordinates")]
+        public string COORDS { get; set; }
+        [XmlAttribute("tileSet")]
+        public string TILESET { get; set; }
+        [XmlAttribute("tileID")]
+        public string TILEID { get; set; }
+    }
+
+    public class component
+    {
+        [XmlAttribute("coordinates")]
+        public string COORDS { get; set; }
+        [XmlAttribute("name")]
+        public string NAME { get; set; }
+
+        //first actor in the list is the root
+        [XmlElement("actors")]
+        public List<actors> ACTORS { get; set; }
+        
+    }
+
+    public class actors
+    {
+        [XmlAttribute("className")]
+        public Type actor { get; set; }
+    }
+
+
     //TODO
     internal class MapLoader : Map
     {
         //strings instead of values. throw exception if not cool
     }
+
+
 
     public class InvalidMapFileFormatException : System.IO.FileLoadException
     {
