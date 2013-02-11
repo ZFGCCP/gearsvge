@@ -193,18 +193,16 @@ namespace Gears.Cartography
 
     public class tile
     {
-        [XmlAttribute("coordinates")]
+        [XmlAttribute("coordinates")] //where in the map to place this tile
         public string COORDS { get; set; }
-        [XmlAttribute("tileSet")]
+        [XmlAttribute("tileSet")] //which texture atlas to take from.
         public string TILESET { get; set; }
-        [XmlAttribute("tileID")]
-        public string TILEID { get; set; }
+        [XmlAttribute("tileSelection")] //the coordinate set for the piece of the atlas to use
+        public string TILESELECTION { get; set; }
     }
 
     public class component
     {
-        [XmlAttribute("coordinates")]
-        public string COORDS { get; set; }
         [XmlAttribute("name")]
         public string NAME { get; set; }
 
@@ -218,6 +216,12 @@ namespace Gears.Cartography
     {
         [XmlAttribute("className")]
         public Type actor { get; set; }
+        [XmlAttribute("Id")]
+        public string name {get; set; }
+        [XmlAttribute("coordinates")]
+        public string COORDS { get; set; }
+        [XmlAttribute("params")] //if any, this will probably be blank in most cases.
+        public string param { get; set; }
     }
 
 
