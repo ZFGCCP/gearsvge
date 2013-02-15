@@ -132,10 +132,10 @@ namespace Gears.Cartography
             NUM_LAYERS = copyMe.NUM_LAYERS;
             LAYER_WIDTH_TILES = copyMe.LAYER_WIDTH_TILES;
             LAYER_HEIGHT_TILES = copyMe.LAYER_HEIGHT_TILES;
-            LAYERS = new List<layer>();
+            LAYERS = new layer[copyMe.LAYERS.Length];
 
-            foreach (layer lay in copyMe.LAYERS)
-                LAYERS.Add(lay);
+            for (int i = 0; i < LAYERS.Length; i++)
+                LAYERS[i] = copyMe.LAYERS[i];
 
 
         }
@@ -162,7 +162,7 @@ namespace Gears.Cartography
             public int LAYER_HEIGHT_TILES {get; set;}
 
             [XmlElement("data")]
-            public List<layer> LAYERS { get; set; }
+            public layer[] LAYERS { get; set; }
 
 
             protected static Map deserializeFromXml(string fileName)
@@ -173,24 +173,38 @@ namespace Gears.Cartography
                 return (Gears.Cartography.Map)deserializer.Deserialize(reader);
             }
 
+            public void serializeToXml(string fileName)
+            {
+
+                    XmlSerializer serialiser = new XmlSerializer(typeof(Map));
+                    TextWriter writer = new StreamWriter(fileName);
+                    serialiser.Serialize(writer, this);
+                
+
+            }
+
+                
+
 
 
     }
 
+    [Serializable]
     public class layer
     {
         [XmlAttribute("layerName")]
         public string NAME { get; set; }
 
-        [XmlElement("tiles")]
-        public List<tile> TILES { get; set; }
+        [XmlElement("tile")]
+        public tile[] TILE { get; set; }
 
         [XmlElement("components")]
-        public List<component> COMPONENTS { get; set; }
+        public component[] COMPONENTS { get; set; }
 
 
     }
 
+    [Serializable]
     public class tile
     {
         [XmlAttribute("coordinates")] //where in the map to place this tile
@@ -201,6 +215,7 @@ namespace Gears.Cartography
         public string TILESELECTION { get; set; }
     }
 
+    [Serializable]
     public class component
     {
         [XmlAttribute("name")]
@@ -208,10 +223,11 @@ namespace Gears.Cartography
 
         //first actor in the list is the root
         [XmlElement("actors")]
-        public List<actors> ACTORS { get; set; }
+        public actors[] ACTORS { get; set; }
         
     }
 
+    [Serializable]
     public class actors
     {
         [XmlAttribute("className")]
@@ -220,7 +236,7 @@ namespace Gears.Cartography
         public string name {get; set; }
         [XmlAttribute("coordinates")]
         public string COORDS { get; set; }
-        [XmlAttribute("params")] //if any, this will probably be blank in most cases.
+        [XmlElement("params")] //if any, this will probably be blank in most cases.
         public string param { get; set; }
     }
 
