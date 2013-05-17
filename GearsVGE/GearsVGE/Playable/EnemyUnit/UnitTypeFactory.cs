@@ -33,6 +33,13 @@ namespace Gears.Playable
             //    u.LoadContent();
             //}
         }
+        protected List<Unit> units
+        {
+            get
+            {
+                return _units;
+            }
+        }
         public void Update(GameTime gameTime)
         {
             if (_units != null)
