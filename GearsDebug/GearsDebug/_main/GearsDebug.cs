@@ -17,8 +17,14 @@ namespace GearsDebug
     public class GearsDebug : Microsoft.Xna.Framework.Game
     {
         //Screen Resolution defaults
-        private const int ScreenWidth = 1280;
-        private const int ScreenHeight = 720;
+        private static int GameResolutionWidth = 1920;
+        private static int GameResolutionHeight = 1080;
+        private static int WindowResolutionWidth = 1280;
+        private static int WindowResolutionHeight = 720;
+
+        private static bool resultionIndependent = true; // DON'T CHANGE THIS DURING RUNTIME FOR NOW
+        private Vector2 baseScreenSize = new Vector2(GameResolutionWidth, GameResolutionHeight);
+
 
         private GraphicsDeviceManager graphics;
         private GraphicsDevice device;
@@ -42,16 +48,18 @@ namespace GearsDebug
         protected override void Initialize()
         {
             //GEARSDEBUG VERSION. This is the version of the game module, not the VGE.
-            VersionManager.Version = "0.1.0";
+            VersionManager.Version = "ALPHA";
 
-            //Register our ContentManager
-            ContentButler.setGame(this);
+            //Register our Game to Master
+            Master.Initialize(this);
 
             //Setup screen display/graphics device
-            ViewportHandler.SetScreen(ScreenWidth, ScreenHeight);
-            graphics.PreferredBackBufferWidth = ViewportHandler.GetWidth();
-            graphics.PreferredBackBufferHeight = ViewportHandler.GetHeight();
+            ViewportHandler.SetScreen(GameResolutionWidth, GameResolutionHeight);
+            graphics.PreferredBackBufferWidth = WindowResolutionWidth;
+            graphics.PreferredBackBufferHeight = WindowResolutionHeight;
+            //graphics.
             graphics.IsFullScreen = false;
+            //graphics.
             graphics.ApplyChanges();
             
 
@@ -62,7 +70,7 @@ namespace GearsDebug
                 //  DEBUG :: The uncommented line will change the default state that runs first.
                 //  Only one of the following Master.Push() lines should be uncommented at a time.
                 //Master.Push(new Splash());    //Uncomment this line to start game normally.
-                Master.Push(new debugger());    //Uncomment this line to start the game with debug menu.
+                Master.Push(new DebugBootstrapper());    //Uncomment this line to start the game with debug menu.
                 //  END of Master.Push() lines
                 
             #else //release
@@ -74,7 +82,6 @@ namespace GearsDebug
             Gears.Cloud.Media.AudioPlayer.start();
 
             //Master.GetInputManager().GetCurrentInputHandler()
-            //Gears.Cloud.Master.Initialize();
             base.Initialize();
         }
 
@@ -82,6 +89,17 @@ namespace GearsDebug
         {
             device = graphics.GraphicsDevice;
             spriteBatch = new SpriteBatch(device);
+
+            if (resultionIndependent)
+            {
+                GameResolutionWidth = ViewportHandler.GetWidth();
+                GameResolutionHeight = ViewportHandler.GetHeight();
+            }
+            else
+            {
+                GameResolutionWidth = device.PresentationParameters.BackBufferWidth;
+                GameResolutionHeight = device.PresentationParameters.BackBufferHeight;
+            }
         }
 
         protected override void UnloadContent()
@@ -95,12 +113,30 @@ namespace GearsDebug
             base.Update(gameTime);
         }
 
-
         protected override void Draw(GameTime gameTime)
         {
+            Vector3 screenScalingFactor;
+            if (resultionIndependent)
+            {
+                float horScaling = (float)device.PresentationParameters.BackBufferWidth / ViewportHandler.GetWidth();
+                float verScaling = (float)device.PresentationParameters.BackBufferHeight / ViewportHandler.GetHeight();
+                screenScalingFactor = new Vector3(horScaling, verScaling, 1);
+            }
+            else
+            {
+                screenScalingFactor = new Vector3(1, 1, 1);
+            }
+
+            Matrix globalTransformation = Matrix.CreateScale(screenScalingFactor);
+
+
+            
+            /**************************************/
             device.Clear(Master.GetClearColor());
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);//, SaveStateMode.None);//, ViewportHandler.GetScaleMatrix());
+            //spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Immediate, SaveStateMode.None, globalTransformation);
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, RasterizerState.CullNone, null, globalTransformation);
+            //spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);//, SaveStateMode.None);//, ViewportHandler.GetScaleMatrix());
 
             Master.Draw(spriteBatch);
 
@@ -109,7 +145,5 @@ namespace GearsDebug
             base.Draw(gameTime);
         }
 
-
-    };
-
+    }
 }

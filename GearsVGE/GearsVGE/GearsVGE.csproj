@@ -19,11 +19,6 @@
     <XnaOutputType>Library</XnaOutputType>
     <XnaProfile>Reach</XnaProfile>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -81,9 +76,6 @@
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Input.Touch, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
@@ -116,7 +108,6 @@
   <ItemGroup>
     <Compile Include="Cartography\MapEngine.cs" />
     <Compile Include="Cloud\CollisionManager.cs" />
-    <Compile Include="Cloud\ContentButler.cs" />
     <Compile Include="Cloud\EntityTracker.cs" />
     <Compile Include="Cloud\Events\CBaseEventTrigger.cs" />
     <Compile Include="Cloud\Events\CEvent.cs" />
@@ -129,6 +120,8 @@
     <Compile Include="Cloud\Master.cs" />
     <Compile Include="Cloud\Media\AudioPlayer.cs" />
     <Compile Include="Cloud\Media\Sound.cs" />
+    <Compile Include="Cloud\Utility\Drawing\DrawingHelper.cs" />
+    <Compile Include="Cloud\Utility\Drawing\LineSegment.cs" />
     <Compile Include="Cloud\Utility\XMLEngine.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -139,6 +132,7 @@
     <Compile Include="Navigation\HardExitGameState.cs" />
     <Compile Include="Navigation\IMenuItem.cs" />
     <Compile Include="Navigation\Menu.cs" />
+    <Compile Include="Navigation\MenuElement.cs" />
     <Compile Include="Navigation\MenuItemCollection.cs" />
     <Compile Include="Navigation\MenuReadyGameState.cs" />
     <Compile Include="Navigation\MenuState.cs" />
@@ -175,16 +169,6 @@
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5</ProductName>
@@ -198,11 +182,6 @@
     <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
       <Visible>False</Visible>
       <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Xna.Framework.3.1">
-      <Visible>False</Visible>
-      <ProductName>Microsoft XNA Framework Redistributable 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Xna.Framework.4.0">

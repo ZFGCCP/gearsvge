@@ -23,6 +23,9 @@ namespace Gears.Playable
     /// </summary>
     public abstract class Unit : Entity
     {
+        protected internal BoundingBox _boundingBox;
+        protected internal Vector3[] _transformedPoints;
+
         protected internal Vector2 _position;
         protected internal Vector2 _imageOrigin;
         protected internal Color _color;
@@ -36,9 +39,6 @@ namespace Gears.Playable
         protected internal string _texFileLoc = null;
         protected abstract string TextureFileLocation { get; }
 
-        //protected internal const string _unitDir = @"Unit";
-
-
         /// <summary>
         /// This defaulted constructor is for debugging/testing purposes only.
         /// It is required in a regular game to use a parameterized constructor instead.
@@ -48,16 +48,7 @@ namespace Gears.Playable
         internal Unit(UnitParameters up) : this(up.Origin, up.Color, up.Rotation/*, up.TextureFileName*/) { }
         //TODO: make this constructor an alias constructor
         public Unit(Vector2 startingPosition, Color color, float rotation/*, string textureFileName*/) 
-            : this(startingPosition, color, rotation, Vector2.Zero)
-        {
-            //_position = startingPosition;
-           // _color = color;
-           // _rotation = rotation;
-           // _imageOrigin = Vector2.Zero;//*
-           // _textureFileName = TextureFileLocation;
-
-           // Initialize();
-        }
+            : this(startingPosition, color, rotation, Vector2.Zero) { }
         //_texture, _position, _color, _rotation, Vector2.Zero, _scale, SpriteEffects.None, _depth
         public Unit(Vector2 startingPosition, Color color, float rotation, Vector2 imageOrigin/*, string textureFileName*/)
         {
@@ -80,7 +71,8 @@ namespace Gears.Playable
             {
                 if (TextureFileLocation != null)
                 {
-                    _texture = ContentButler.GetGame().Content.Load<Texture2D>(TextureFileLocation);
+                    _texture = Master.GetGame().Content.Load<Texture2D>(TextureFileLocation);
+                    this.CalculateBoundingBox();
                 }
                 else
                 {
@@ -91,6 +83,38 @@ namespace Gears.Playable
             {
                 HandleTextureFileLocationError(false);
             }
+        }
+
+        //THIS NEEDS TO BE TESTED OUT
+        protected void CalculateBoundingBox()
+        {
+            Matrix rotMatrix = Matrix.CreateRotationZ(this._rotation);
+            Matrix scaleMatrix = Matrix.CreateScale(this._scale);
+            Matrix translationMatrix = Matrix.CreateTranslation(this._position.X, this._position.Y, 0);
+
+            Matrix finalMatrix = rotMatrix * scaleMatrix * translationMatrix;
+
+            int texheight = _texture.Height;
+            int texwidth = _texture.Width;
+            
+            Vector2 zeroZero = new Vector2(_position.X,_position.Y);
+            Vector2 zeroOne = new Vector2(_position.X + texwidth,_position.Y);
+            Vector2 oneZero = new Vector2(_position.X, _position.Y + texheight);
+            Vector2 oneOne = new Vector2(_position.X + texwidth,_position.Y + texheight);
+
+            Vector2 transformed_zeroZero = Vector2.Transform(zeroZero, finalMatrix);
+            Vector2 transformed_zeroOne = Vector2.Transform(zeroOne, finalMatrix);
+            Vector2 transformed_oneZero = Vector2.Transform(oneZero, finalMatrix);
+            Vector2 transformed_oneOne = Vector2.Transform(oneOne, finalMatrix);
+
+            _transformedPoints = null;
+            _transformedPoints = new Vector3[4];
+            _transformedPoints[0] = new Vector3(transformed_zeroZero, 0);
+            _transformedPoints[1] = new Vector3(transformed_zeroOne, 0);
+            _transformedPoints[2] = new Vector3(transformed_oneZero, 0);
+            _transformedPoints[3] = new Vector3(transformed_oneOne, 0);
+
+            _boundingBox = BoundingBox.CreateFromPoints(_transformedPoints);
         }
 
         private void HandleTextureFileLocationError(bool throwException)
