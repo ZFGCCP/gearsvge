@@ -44,9 +44,9 @@ namespace Gears.Playable
         {
             if (_units != null)
             {
-                foreach (Unit u in _units)
+                for (int i = 0; i < _units.Count; i++)
                 {
-                    u.Update(gameTime);
+                    _units[i].Update(gameTime);
                 }
             }
             //else

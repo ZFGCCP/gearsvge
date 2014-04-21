@@ -182,7 +182,7 @@ namespace Gears.Cartography
             protected static Map deserializeFromXml(string fileName)
             {
                 XmlRootAttribute root = new XmlRootAttribute();
-                root.ElementName = "map";
+                root.ElementName = "Map";
                 root.IsNullable = true;
                 XmlSerializer deserializer = new XmlSerializer(typeof(Map),root);
                 TextReader reader = new StreamReader(fileName);
